@@ -1,12 +1,32 @@
 .venv/
 .pip-cache/
 .pip-tmp/
+.idea/
+.vs/
 
 __pycache__/
 *.py[cod]
 *.pyo
+*.log
+*.tmp
+*.bak
+*.swp
+*.sqlite3
+*.db
 
-exercises/.env
+htmlcov/
+.coverage
+.coverage.*
+
+dist/
+build/
+site/
+
+.ipynb_checkpoints/
+
+**/.env
+**/.env.*
+!**/.env.example
 
 .pytest_cache/
 .mypy_cache/
@@ -15,6 +35,8 @@ exercises/.env
 .vscode/
 
 projects/
+chroma/
+chromadb/
 
 Thumbs.db
 .DS_Store
