@@ -1,0 +1,27 @@
+# Agent 学习环境依赖
+# =====================
+
+# LangChain 生态
+langchain>=0.3
+langchain-openai>=0.3
+langchain-community>=0.3
+langgraph>=0.2
+
+# CrewAI
+crewai>=1.0
+crewai-tools>=0.17
+
+# AutoGen
+autogen-agentchat>=0.4
+autogen-ext[openai]>=0.4
+
+# 基础依赖
+python-dotenv>=1.0
+pydantic>=2.0
+
+# 可选：向量数据库（RAG 用）
+# chromadb>=0.5
+# faiss-cpu>=1.8
+
+# 可选：Web 搜索工具
+# tavily-python>=0.3
