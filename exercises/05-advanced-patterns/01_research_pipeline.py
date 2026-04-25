@@ -17,42 +17,20 @@
 
 import os
 from typing import TypedDict, Annotated, Literal
-from dotenv import load_dotenv
+import operator
 
-load_dotenv()
-
-# ============================================
-# 综合项目: 自动化研究管道
-# ============================================
-# 
-# 流程设计:
-#
-#   [用户输入研究主题]
-#          ↓
-#   [规划研究方向]  ←────────┐
-#          ↓                  │
-#   [并行搜索多个来源]        │
-#   ┌──────┼──────┐           │
-#   ↓      ↓      ↓           │
-# [来源A][来源B][来源C]       │
-#   └──────┼──────┘           │
-#          ↓                  │
-#   [汇总分析]                │
-#          ↓                  │
-#   [质量评估] ──(不满意)──→──┘
-#          ↓ (满意)
-#   [生成报告]
-#          ↓
-#   [Human Review]
-#          ↓
-#   [最终输出]
-#
+def merge_dicts(a: dict, b: dict) -> dict:
+    """安全的字典合并函数，用于处理多个源的并发写入"""
+    c = a.copy()
+    c.update(b)
+    return c
 
 class ResearchState(TypedDict):
     """研究管道的状态定义"""
     topic: str                    # 研究主题
     research_plan: list[str]      # 研究方向列表
-    sources: dict[str, str]       # 各来源的搜索结果
+    # ⭐️ 核心点：当多个并行节点同时往一个状态字段写入时，必须用 Annotated + reducer 来聚合。
+    sources: Annotated[dict[str, str], merge_dicts]  # 各来源的搜索结果
     analysis: str                 # 汇总分析
     quality_score: float          # 质量评分 (0-1)
     iteration: int                # 当前迭代次数
@@ -96,18 +74,15 @@ def build_research_pipeline():
     
     def search_source_a(state: ResearchState) -> dict:
         """搜索来源 A（模拟）"""
-        # TODO: 实现搜索逻辑
-        return {"sources": {**state.get("sources", {}), "source_a": "来源A的结果..."}}
+        return {"sources": {"source_a": "来源A的结果..."}}
     
     def search_source_b(state: ResearchState) -> dict:
         """搜索来源 B（模拟）"""
-        # TODO: 实现搜索逻辑
-        return {"sources": {**state.get("sources", {}), "source_b": "来源B的结果..."}}
+        return {"sources": {"source_b": "来源B的结果..."}}
     
     def search_source_c(state: ResearchState) -> dict:
         """搜索来源 C（模拟）"""
-        # TODO: 实现搜索逻辑
-        return {"sources": {**state.get("sources", {}), "source_c": "来源C的结果..."}}
+        return {"sources": {"source_c": "来源C的结果..."}}
     
     def analyze(state: ResearchState) -> dict:
         """汇总分析所有搜索结果"""
@@ -146,15 +121,62 @@ def build_research_pipeline():
         return {"report": report, "status": "report_generated"}
     
     # === 构建图 ===
-    # TODO: 
-    # 1. 创建 StateGraph
-    # 2. 添加所有节点
-    # 3. 添加边（顺序、条件、并行）
-    # 4. 编译
-    # 5. 运行
+    workflow = StateGraph(ResearchState)
     
-    print("TODO: 完成研究管道的构建")
-    print("提示: 使用 StateGraph, add_node, add_edge, add_conditional_edges")
+    # 1. 添加所有节点
+    workflow.add_node("plan", plan_research)
+    workflow.add_node("search_a", search_source_a)
+    workflow.add_node("search_b", search_source_b)
+    workflow.add_node("search_c", search_source_c)
+    workflow.add_node("analyze", analyze)
+    workflow.add_node("evaluate", evaluate_quality)
+    workflow.add_node("report", generate_report)
+    
+    # 2. 添加边 (控制数据流向)
+    workflow.add_edge(START, "plan")
+    
+    # [并行处理 - 扇出 / Fan-out] 一个节点连接多个下游节点，LangGraph 会自动并行执行它们
+    workflow.add_edge("plan", "search_a")
+    workflow.add_edge("plan", "search_b")
+    workflow.add_edge("plan", "search_c")
+    
+    # [等待汇聚 - 扇入 / Fan-in] 多个节点指向同一个目标，需等到它们全执行完才触发下游
+    workflow.add_edge(["search_a", "search_b", "search_c"], "analyze")
+    
+    # 顺序执行分析和评估
+    workflow.add_edge("analyze", "evaluate")
+    
+    # [条件路由与循环优化] 根据质量评分决定是重新规划还是生成报告
+    workflow.add_conditional_edges(
+        "evaluate",
+        should_refine,
+        {
+            "refine": "plan",      # 返回上游，形成循环
+            "generate": "report"   # 进入最终阶段
+        }
+    )
+    
+    workflow.add_edge("report", END)
+    
+    # 4. 编译
+    app = workflow.compile()
+    
+    # 5. 运行测试
+    print("🚀 开始运行研究管道...")
+    initial_state = {
+        "topic": "AI Agent 架构演进与商业落地",
+        "iteration": 0,
+        "max_iterations": 3,
+        "sources": {}
+    }
+    
+    for step in app.stream(initial_state, stream_mode="updates"):
+        for node_name, state_update in step.items():
+            print(f"✅ 完成节点: [{node_name}]")
+            if "quality_score" in state_update:
+                print(f"   -> 评估分数: {state_update['quality_score']:.2f}")
+            if "report" in state_update:
+                print(f"\n🎯 最终产出:\n{state_update['report']}")
 
 
 if __name__ == "__main__":
