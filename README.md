@@ -1,3 +1,5 @@
+[🇨🇳 简体中文](https://github.com/Shizue123/agent-setup/tree/main) | [🇺🇸 English](https://github.com/Shizue123/agent-setup/tree/En)
+
 # Agent Setup
 
 一个面向个人学习与练习的 AI Agent 工程模板，目标是把 Agent 学习路线、环境配置、依赖安装、示例练习和辅助教学提示词整理到同一个仓库里，做到 clone 下来后可以直接开始学、直接开始跑。

@@ -1,3 +1,5 @@
+[🇨🇳 简体中文](https://github.com/Shizue123/agent-setup/tree/main) | [🇺🇸 English](https://github.com/Shizue123/agent-setup/tree/En)
+
 # Agent-Setup 项目结构与代码导读
 
 本项目是一个由浅入深、循序渐进的 AI Agent 学习与开发脚手架。从基础的 LangChain 到复杂的 AutoGen 多智能体以及 MCP（Model Context Protocol）协议挂载，项目代码按照架构难度和商业落地逻辑进行了切割。
@@ -53,3 +55,4 @@
 用于快速部署开发环境的 PowerShell 脚本。
 - **`clone-reference-repos.ps1`**: 自动化获取外部参考源码（即克隆 `projects/` 下的内容）的脚本。
 - **`setup.ps1`**: 自动配置 Python 虚拟环境（.venv）、安装依赖包、甚至初始化全局配置的脚本。
+
