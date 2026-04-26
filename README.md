@@ -1,4 +1,4 @@
-[**简体中文**](./README_zh-CN.md) | [**English**](./README.md)
+[**English**](./README_en.md) | [**简体中文**](./README.md)
 
 # Agent Setup
 
@@ -10,42 +10,41 @@
 ![MCP](https://img.shields.io/badge/MCP-Integrated-0a7ea4)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-## Overview
+## 项目概述
 
-Agent Setup is a progressive learning workspace for modern AI Agent engineering.
-It organizes runnable examples, environment automation, and phase-based exercises in one repository so learners can move from single-agent basics to multi-agent orchestration and MCP tool integration.
+Agent Setup 是一个面向 AI Agent 工程学习与实验的渐进式工作区。
+仓库围绕从单 Agent 到多 Agent、从基础调用到 Workflow Orchestration 的路线组织，保证每个阶段都可以直接运行、直接复现。
 
-Recent code evolution in this workspace includes:
-- Stabilized AutoGen 4.3 MCP integration using `workbench=mcp` and safe message content extraction.
-- Completed advanced LangGraph pipeline patterns in Phase 5, including fan-out/fan-in, reducer-based concurrent state merge, and reflection loop routing.
-- Repository hygiene cleanup to keep the template safe for public sharing.
+当前代码主线已经覆盖：
+- AutoGen Phase 4.3 的 MCP 工作台接入（`workbench=mcp`）。
+- LangGraph Phase 5 的 fan-out/fan-in 并发汇聚与 reducer 状态合并。
+- 反思式循环路由（quality gate）与模板仓库安全清理。
 
-## Core Features
+## 核心特性
 
-- Progressive curriculum from foundational prompting to production-oriented orchestration.
-- Phase-based runnable scripts under `exercises/01` to `exercises/05`.
-- Multi-framework coverage: LangChain, LangGraph, CrewAI, AutoGen, and MCP.
-- Windows-friendly setup scripts with virtual environment bootstrap and dependency installation.
-- Security-friendly defaults (`.env.example` template, env var based keys, no hardcoded credentials).
+- 阶段化学习路径：`exercises/01` 到 `exercises/05` 全链路可运行。
+- 多框架协同：LangChain、LangGraph、CrewAI、AutoGen、MCP。
+- Windows 友好工程化：`setup.ps1` 自动初始化 venv、安装依赖、生成 `.env`。
+- 安全默认配置：通过环境变量注入 API Key，不在业务代码中硬编码敏感凭据。
+- 可扩展参考库机制：可按需克隆 `projects/` 下的官方示例仓库。
 
-## Tech Stack
+## 技术栈
 
-- Language: Python 3.10+
-- Runtime and tooling: PowerShell, venv, pip
-- Agent frameworks:
+- 语言与运行时：Python 3.10+、PowerShell、venv、pip
+- Agent 框架：
     - LangChain
     - LangGraph
-    - CrewAI and crewai-tools
+    - CrewAI / crewai-tools
     - AutoGen (`autogen-agentchat`, `autogen-ext[openai]`)
-- Integration protocol:
-    - MCP (Model Context Protocol) via Node.js stdio server (`@modelcontextprotocol/server-memory`)
-- Config and typing:
+- 协议与集成：
+    - MCP（Model Context Protocol），通过 Node.js stdio server (`@modelcontextprotocol/server-memory`)
+- 基础依赖：
     - python-dotenv
     - Pydantic v2
 
-## Getting Started
+## 快速启动
 
-### 1. Clone and bootstrap (recommended)
+### 1. 克隆并初始化（推荐）
 
 ```powershell
 git clone https://github.com/Shizue123/agent-setup.git
@@ -53,17 +52,17 @@ cd agent-setup
 .\scripts\setup.ps1
 ```
 
-This script will:
-- create `.venv`
-- upgrade `pip`, `setuptools`, `wheel`
-- install dependencies from `exercises/requirements.txt`
-- create `exercises/.env` from `exercises/.env.example` when missing
+初始化脚本会自动完成：
+- 创建 `.venv`
+- 升级 `pip`、`setuptools`、`wheel`
+- 安装 `exercises/requirements.txt`
+- 若缺失则从 `exercises/.env.example` 生成 `exercises/.env`
 
-### 2. Configure environment variables
+### 2. 配置环境变量
 
-Edit `exercises/.env` and add your keys (for example `OPENAI_API_KEY`).
+编辑 `exercises/.env`，补充你的 API Key（例如 `OPENAI_API_KEY`）。
 
-### 3. Run by phase
+### 3. 按阶段运行
 
 ```powershell
 .\.venv\Scripts\python.exe exercises/01-langchain-basics/01_hello_agent.py
@@ -73,11 +72,4 @@ Edit `exercises/.env` and add your keys (for example `OPENAI_API_KEY`).
 .\.venv\Scripts\python.exe exercises/05-advanced-patterns/01_research_pipeline.py
 ```
 
-### 4. Optional reference repositories
-
-```powershell
-.\scripts\clone-reference-repos.ps1
-```
-
-This downloads selected upstream references into `projects/` for local study only.
 
